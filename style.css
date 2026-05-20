@@ -63,65 +63,72 @@ body {
 
 #code-content {
   font-family: 'Fira Code', monospace;
-  font-size: 14px;
+  font-size: 15px; /* Thicker, larger text for better readability */
+  font-weight: 500; /* Thicker strokes increase light output and glow sharpness */
   line-height: 1.6;
   white-space: pre-wrap;
   
   /* Phosphor glow + Voltage hum animation */
   animation: crt-glow-flicker 0.15s infinite;
 
-  /* Scanlines sliced inside the text strokes only */
+  /* Scanlines sliced inside text strokes - increased minimum opacity to 0.65 for visibility */
   -webkit-mask-image: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 1) 50%,
-    rgba(0, 0, 0, 0.4) 50%
+    rgba(0, 0, 0, 0.65) 50%
   );
   -webkit-mask-size: 100% 4px;
 }
 
 @keyframes crt-glow-flicker {
   0% {
-    opacity: 0.985;
+    opacity: 0.99;
     text-shadow: 
-      0 0 1px rgba(255, 255, 255, 0.6),
+      0 0 1px rgba(255, 255, 255, 0.85),
       0 0 3px currentColor,
-      0 0 7px currentColor;
+      0 0 6px currentColor,
+      1px 1px 2px rgba(0, 0, 0, 0.9),
+      -1px -1px 2px rgba(0, 0, 0, 0.9);
   }
   50% {
     opacity: 1.0;
     text-shadow: 
-      0 0 1.5px rgba(255, 255, 255, 0.75),
-      0 0 4px currentColor,
-      0 0 9px currentColor;
+      0 0 1.5px rgba(255, 255, 255, 0.95),
+      0 0 4.5px currentColor,
+      0 0 8.5px currentColor,
+      1px 1px 2px rgba(0, 0, 0, 0.9),
+      -1px -1px 2px rgba(0, 0, 0, 0.9);
   }
   100% {
-    opacity: 0.985;
+    opacity: 0.99;
     text-shadow: 
-      0 0 1px rgba(255, 255, 255, 0.6),
+      0 0 1px rgba(255, 255, 255, 0.85),
       0 0 3px currentColor,
-      0 0 7px currentColor;
+      0 0 6px currentColor,
+      1px 1px 2px rgba(0, 0, 0, 0.9),
+      -1px -1px 2px rgba(0, 0, 0, 0.9);
   }
 }
 
 .code-old {
-  color: #a855f7; /* Radiant warm neon purple - cooling deleted code */
+  color: #c084fc; /* Brighter neon purple/lavender - high visibility phosphor */
   transition: color 0.3s ease;
 }
 
 .code-new {
-  color: #00f5a0; /* Vibrant electric mint-teal - active new code */
+  color: #00ffd0; /* Brighter neon mint-teal - sharp, high contrast */
   transition: color 0.3s ease;
 }
 
 .orphan {
-  color: #f43f5e; /* Electric rose/crimson */
+  color: #fb7185; /* Bright neon rose */
   text-decoration: line-through;
-  text-decoration-color: #f43f5e;
-  opacity: 0.45;
+  text-decoration-color: #fb7185;
+  opacity: 0.55;
 }
 
 .forced-out {
-  color: #fbbf24; /* Polished glowing amber-gold */
+  color: #fde047; /* Brighter lemon yellow */
   font-style: italic;
-  opacity: 0.85;
+  opacity: 0.9;
 }
