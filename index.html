@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hydra Site | State-Space Gallery</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script>
+      // Polyfill 'global' for hydra-synth internal dependencies
+      if (typeof global === 'undefined') {
+        window.global = window;
+      }
+    </script>
+  </head>
+  <body>
+    <!-- The Hydra Canvas -->
+    <canvas id="hydra-canvas"></canvas>
+
+    <!-- The Code Overlay -->
+    <div id="ui-overlay">
+      <div id="code-viewer" class="terminal-style">
+        <pre><code id="code-content"></code></pre>
+      </div>
+    </div>
+
+    <!-- Dev Controls (Hidden by default) -->
+    <div id="dev-panel" class="hidden">
+      <h3>Physics Debugger</h3>
+      <div id="sliders"></div>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
