@@ -12,7 +12,6 @@
     "vite": "^6.0.0"
   },
   "dependencies": {
-    "esprima": "^4.0.1",
     "hydra-synth": "^1.4.0"
   }
 }
