@@ -106,9 +106,9 @@ body::after {
   0%, 100% {
     opacity: 0.995;
     text-shadow: 
-      0 0 1.5px rgba(255, 255, 255, 0.95),
-      0 0 3px currentColor,
-      0 0 6px currentColor,
+      0 0 1px rgba(255, 255, 255, 0.95),
+      0 0 2px currentColor,
+      0 0 4px currentColor,
       /* Layer 1: Tight cardinal diagonal black drop-shadows to isolate characters */
       1px 1px 1.5px rgba(0, 0, 0, 0.95),
       -1px 1px 1.5px rgba(0, 0, 0, 0.95),
@@ -123,9 +123,9 @@ body::after {
   50% {
     opacity: 1.0;
     text-shadow: 
-      0 0 2px rgba(255, 255, 255, 1),
-      0 0 4.5px currentColor,
-      0 0 9px currentColor,
+      0 0 1.5px rgba(255, 255, 255, 1),
+      0 0 2.5px currentColor,
+      0 0 5px currentColor,
       /* Layer 1: Tight cardinal diagonal black drop-shadows */
       1px 1px 1.5px rgba(0, 0, 0, 0.95),
       -1px 1px 1.5px rgba(0, 0, 0, 0.95),
@@ -140,12 +140,12 @@ body::after {
 }
 
 .code-old {
-  color: #d8b4fe; /* Lighter, highly radiant pastel violet/lavender phosphor */
+  color: #ff7700; /* Vibrant retro amber-orange phosphor */
   transition: color 0.3s ease;
 }
 
 .code-new {
-  color: #00ffa3; /* Pure high-contrast cyber terminal green/mint phosphor */
+  color: #00ff55; /* Saturated, extremely strong cyber green phosphor */
   transition: color 0.3s ease;
 }
 
@@ -157,7 +157,18 @@ body::after {
 }
 
 .forced-out {
-  color: #fde047; /* Brightest lemon yellow */
+  color: #000000 !important; /* Solid high-contrast black instead of yellow */
   font-style: italic;
-  /* Removed opacity to render at full 100% intensity */
+  
+  /* 
+    Disable glowing animations and apply a crisp white silhouette backing 
+    so the black text reads perfectly on dark/vignette background zones.
+  */
+  animation: none !important;
+  text-shadow: 
+    0 0 1.5px rgba(255, 255, 255, 0.9),
+    1px 1px 0 rgba(255, 255, 255, 0.95),
+    -1px 1px 0 rgba(255, 255, 255, 0.95),
+    1px -1px 0 rgba(255, 255, 255, 0.95),
+    -1px -1px 0 rgba(255, 255, 255, 0.95) !important;
 }
