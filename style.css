@@ -86,12 +86,24 @@ body::after {
 #code-content {
   font-family: 'Fira Code', monospace;
   font-size: 16px; /* Larger text for extreme legibility */
-  font-weight: 600; /* Thicker strokes increase light output and glow definition */
+  font-weight: 600; /* Thicker strokes increase text visibility */
   line-height: 1.6;
   white-space: pre-wrap;
   
-  /* Soothing, low-distortion organic analog breathing cycle */
-  animation: crt-glow-breath 3s ease-in-out infinite;
+  /* 
+    Static, flat high-contrast black backings (NO GLOW).
+    Uses tight cardinal diagonal offsets and slightly wider drop shadows 
+    to isolate flat characters perfectly on bright canvas zones.
+  */
+  text-shadow: 
+    1px 1px 1.5px rgba(0, 0, 0, 0.95),
+    -1px 1px 1.5px rgba(0, 0, 0, 0.95),
+    1px -1px 1.5px rgba(0, 0, 0, 0.95),
+    -1px -1px 1.5px rgba(0, 0, 0, 0.95),
+    2px 2px 3px rgba(0, 0, 0, 0.9),
+    -2px 2px 3px rgba(0, 0, 0, 0.9),
+    2px -2px 3px rgba(0, 0, 0, 0.9),
+    -2px -2px 3px rgba(0, 0, 0, 0.9);
 
   /* Scanlines sliced inside text strokes - refined to 80% solid and 90% opaque to eliminate moire aliasing distortion */
   -webkit-mask-image: linear-gradient(
@@ -100,43 +112,6 @@ body::after {
     rgba(0, 0, 0, 0.9) 80%
   );
   -webkit-mask-size: 100% 3px;
-}
-
-@keyframes crt-glow-breath {
-  0%, 100% {
-    opacity: 0.995;
-    text-shadow: 
-      0 0 1px rgba(255, 255, 255, 0.95),
-      0 0 2px currentColor,
-      0 0 4px currentColor,
-      /* Layer 1: Tight cardinal diagonal black drop-shadows to isolate characters */
-      1px 1px 1.5px rgba(0, 0, 0, 0.95),
-      -1px 1px 1.5px rgba(0, 0, 0, 0.95),
-      1px -1px 1.5px rgba(0, 0, 0, 0.95),
-      -1px -1px 1.5px rgba(0, 0, 0, 0.95),
-      /* Layer 2: Wider diagonal shadows to catch glow edges and create an embossed outline */
-      2px 2px 3px rgba(0, 0, 0, 0.9),
-      -2px 2px 3px rgba(0, 0, 0, 0.9),
-      2px -2px 3px rgba(0, 0, 0, 0.9),
-      -2px -2px 3px rgba(0, 0, 0, 0.9);
-  }
-  50% {
-    opacity: 1.0;
-    text-shadow: 
-      0 0 1.5px rgba(255, 255, 255, 1),
-      0 0 2.5px currentColor,
-      0 0 5px currentColor,
-      /* Layer 1: Tight cardinal diagonal black drop-shadows */
-      1px 1px 1.5px rgba(0, 0, 0, 0.95),
-      -1px 1px 1.5px rgba(0, 0, 0, 0.95),
-      1px -1px 1.5px rgba(0, 0, 0, 0.95),
-      -1px -1px 1.5px rgba(0, 0, 0, 0.95),
-      /* Layer 2: Wider diagonal shadows */
-      2px 2px 3px rgba(0, 0, 0, 0.9),
-      -2px 2px 3px rgba(0, 0, 0, 0.9),
-      2px -2px 3px rgba(0, 0, 0, 0.9),
-      -2px -2px 3px rgba(0, 0, 0, 0.9);
-  }
 }
 
 .code-old {
