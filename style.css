@@ -45,6 +45,7 @@ body {
 }
 
 #code-viewer {
+  position: relative; /* required for absolute scanline overlay */
   background: transparent;
   border: none;
   border-radius: 0;
@@ -61,11 +62,56 @@ body {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+/* High-frequency CRT Scanline overlay */
+#code-viewer::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.15) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 10;
+  pointer-events: none;
+}
+
 #code-content {
   font-family: 'Fira Code', monospace;
   font-size: 14px;
   line-height: 1.6;
   white-space: pre-wrap;
+  
+  /* Phosphor glow + Voltage hum animation */
+  animation: crt-glow-flicker 0.15s infinite;
+}
+
+@keyframes crt-glow-flicker {
+  0% {
+    opacity: 0.985;
+    text-shadow: 
+      0 0 1px rgba(255, 255, 255, 0.6),
+      0 0 3px currentColor,
+      0 0 7px currentColor;
+  }
+  50% {
+    opacity: 1.0;
+    text-shadow: 
+      0 0 1.5px rgba(255, 255, 255, 0.75),
+      0 0 4px currentColor,
+      0 0 9px currentColor;
+  }
+  100% {
+    opacity: 0.985;
+    text-shadow: 
+      0 0 1px rgba(255, 255, 255, 0.6),
+      0 0 3px currentColor,
+      0 0 7px currentColor;
+  }
 }
 
 .code-old {
