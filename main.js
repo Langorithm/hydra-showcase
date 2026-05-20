@@ -506,9 +506,9 @@ function updateRender() {
     let rightMask = shape(4, 0.166, 0.001).scale(1, 1, 6).scrollX(-0.33);
 
     // Combine them side-by-side and output to o0 (the screen)
-    src(col1).mult(leftMask)
-      .add(src(col2).mult(midMask))
-      .add(src(col3).mult(rightMask))
+    col1.mult(leftMask)
+      .add(col2.mult(midMask))
+      .add(col3.mult(rightMask))
       .out(o0);
 
     codeContent.innerHTML = activeHTML;
