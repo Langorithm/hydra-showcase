@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;700&family=Outfit:wght@300;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Inter:wght@400;700&family=Outfit:wght@300;600&display=swap');
 
 :root {
   --bg-color: #050505;
@@ -67,43 +67,39 @@ body::after {
 }
 
 #code-viewer {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
-  max-width: 700px;
+  background: rgba(10, 10, 10, 0.18); /* Whispers-thin dark tint */
+  border: 1px solid rgba(255, 255, 255, 0.02); /* Whisper-thin translucent border */
+  border-radius: 6px;
+  padding: 20px 28px;
+  max-width: 720px;
   width: auto;
-  box-shadow: none;
-  margin-bottom: 180px; /* Space for the vertical reflection */
-  -webkit-box-reflect: below 8px linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.35) 0%,
-    transparent 80%
-  );
+  
+  /* Make text fully selectable while empty space remains click-through */
+  pointer-events: auto;
+  user-select: text;
+  -webkit-user-select: text;
+  
+  /* Minimum glass effect: subtle frosted diffusion */
+  backdrop-filter: blur(2px) saturate(105%);
+  -webkit-backdrop-filter: blur(2px) saturate(105%);
+  
+  box-shadow: none; /* No panel shadow */
+    
+  margin-bottom: 40px;
+  
+  /* Main text is 100% sharp and fully readable */
+  opacity: 0.87;
+  filter: none;
+  
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 #code-content {
-  font-family: 'Fira Code', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 16px; /* Larger text for extreme legibility */
   font-weight: 600; /* Thicker strokes increase text visibility */
   line-height: 1.6;
   white-space: pre-wrap;
-  
-  /* 
-    Static, flat high-contrast black backings (NO GLOW).
-    Uses tight cardinal diagonal offsets and slightly wider drop shadows 
-    to isolate flat characters perfectly on bright canvas zones.
-  */
-  text-shadow: 
-    1px 1px 1.5px rgba(0, 0, 0, 0.95),
-    -1px 1px 1.5px rgba(0, 0, 0, 0.95),
-    1px -1px 1.5px rgba(0, 0, 0, 0.95),
-    -1px -1px 1.5px rgba(0, 0, 0, 0.95),
-    2px 2px 3px rgba(0, 0, 0, 0.9),
-    -2px 2px 3px rgba(0, 0, 0, 0.9),
-    2px -2px 3px rgba(0, 0, 0, 0.9),
-    -2px -2px 3px rgba(0, 0, 0, 0.9);
 
   /* Scanlines sliced inside text strokes - refined to 80% solid and 90% opaque to eliminate moire aliasing distortion */
   -webkit-mask-image: linear-gradient(
@@ -115,20 +111,42 @@ body::after {
 }
 
 .code-old {
-  color: #ff7700; /* Vibrant retro amber-orange phosphor */
+  color: #d99c5d; /* Darkened a bit and desaturated slightly, gorgeous retro warm amber */
   transition: color 0.3s ease;
+  /* Thinnest outline backing + thick clear glass soft reflection back layer (less blurry, 14% less opaque) */
+  text-shadow: 
+    0.5px 0.5px 0 rgba(0, 0, 0, 0.9),
+    -0.5px 0.5px 0 rgba(0, 0, 0, 0.9),
+    0.5px -0.5px 0 rgba(0, 0, 0, 0.9),
+    -0.5px -0.5px 0 rgba(0, 0, 0, 0.9),
+    -12px 3px 2px rgba(217, 156, 93, 0.31);
 }
 
 .code-new {
-  color: #00ff55; /* Saturated, extremely strong cyber green phosphor */
+  color: #2eb662; /* Slightly darker terminal cyber-green phosphor */
   transition: color 0.3s ease;
+  /* Thinnest outline backing + thick clear glass soft reflection back layer (less blurry, 14% less opaque) */
+  text-shadow: 
+    0.5px 0.5px 0 rgba(0, 0, 0, 0.9),
+    -0.5px 0.5px 0 rgba(0, 0, 0, 0.9),
+    0.5px -0.5px 0 rgba(0, 0, 0, 0.9),
+    -0.5px -0.5px 0 rgba(0, 0, 0, 0.9),
+    -12px 3px 2px rgba(46, 182, 98, 0.31);
 }
 
 .orphan {
-  color: #fb7185; /* Bright neon rose */
+  color: #cf6b78; /* Muted, desaturated retro rose */
   text-decoration: line-through;
-  text-decoration-color: #fb7185;
-  opacity: 0.8; /* Increased opacity from 0.55 for enhanced visibility */
+  text-decoration-color: #cf6b78;
+  opacity: 0.8; /* Slight standard opacity to distinguish line-through state */
+  transition: color 0.3s ease;
+  /* Thinnest outline backing + thick clear glass soft reflection back layer (less blurry, 14% less opaque) */
+  text-shadow: 
+    0.5px 0.5px 0 rgba(0, 0, 0, 0.9),
+    -0.5px 0.5px 0 rgba(0, 0, 0, 0.9),
+    0.5px -0.5px 0 rgba(0, 0, 0, 0.9),
+    -0.5px -0.5px 0 rgba(0, 0, 0, 0.9),
+    -12px 3px 2px rgba(207, 107, 120, 0.31);
 }
 
 .forced-out {
@@ -136,14 +154,48 @@ body::after {
   font-style: italic;
   
   /* 
-    Disable glowing animations and apply a crisp white silhouette backing 
-    so the black text reads perfectly on dark/vignette background zones.
+    Disable glowing animations
   */
   animation: none !important;
+  /* Thinnest white outline backing + thick clear glass soft reflection back layer (less blurry, 14% less opaque) */
   text-shadow: 
-    0 0 1.5px rgba(255, 255, 255, 0.9),
-    1px 1px 0 rgba(255, 255, 255, 0.95),
-    -1px 1px 0 rgba(255, 255, 255, 0.95),
-    1px -1px 0 rgba(255, 255, 255, 0.95),
-    -1px -1px 0 rgba(255, 255, 255, 0.95) !important;
+    0.5px 0.5px 0 rgba(255, 255, 255, 0.9),
+    -0.5px 0.5px 0 rgba(255, 255, 255, 0.9),
+    0.5px -0.5px 0 rgba(255, 255, 255, 0.9),
+    -0.5px -0.5px 0 rgba(255, 255, 255, 0.9),
+    -12px 3px 2px rgba(255, 255, 255, 0.31) !important;
 }
+
+/* 
+  =========================================
+  JS SYNTAX HIGHLIGHTING (ADAPTIVE SYSTEM)
+  =========================================
+*/
+
+/* Active Green Phosphor Lines (.code-new) — monochromatic, low inter-token contrast */
+.code-new .js-keyword { color: #5ccc88; font-weight: 700; }
+.code-new .js-number { color: #48ba72; }
+.code-new .js-string { color: #66d492; font-style: italic; }
+.code-new .js-function { color: #4ac47c; }
+.code-new .js-comment { color: #3a8c58; opacity: 0.6; }
+
+/* Inactive Amber-Rust Lines (.code-old) — warm spread, more inter-token contrast */
+.code-old .js-keyword { color: #f5be30; font-weight: 700; }
+.code-old .js-number { color: #e86840; }
+.code-old .js-string { color: #f0cc5a; font-style: italic; }
+.code-old .js-function { color: #d8691e; }
+.code-old .js-comment { color: #a07048; opacity: 0.65; }
+
+/* Orphaned Rose Lines (.orphan) */
+.orphan .js-keyword { color: #ffb1b8; font-weight: 700; }
+.orphan .js-number { color: #f3a8b1; }
+.orphan .js-string { color: #ffccd3; font-style: italic; }
+.orphan .js-function { color: #ffa3af; }
+.orphan .js-comment { color: #7f6e70; opacity: 0.65; }
+
+/* Forced Out Lines (.forced-out) */
+.forced-out .js-keyword { color: #222222; font-weight: 700; }
+.forced-out .js-number { color: #333333; }
+.forced-out .js-string { color: #111111; font-style: italic; }
+.forced-out .js-function { color: #222222; }
+.forced-out .js-comment { color: #555555; opacity: 0.65; }

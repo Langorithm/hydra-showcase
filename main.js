@@ -324,6 +324,64 @@ function escapeHTML(str) {
   );
 }
 
+function highlightJS(text) {
+  // 1. Separate comments first (to avoid parsing keywords/numbers/functions inside comments)
+  let commentPlaceholder = null;
+  let textWithoutComment = text;
+  const commentMatch = text.match(/\/\/.*$/);
+  if (commentMatch) {
+    commentPlaceholder = commentMatch[0];
+    textWithoutComment = text.slice(0, commentMatch.index);
+  }
+
+  // 2. Escape HTML on the code part
+  let html = escapeHTML(textWithoutComment);
+
+  // 3. Highlight strings first, replacing them with placeholders to prevent conflicts
+  const strings = [];
+  html = html.replace(/(&#39;.*?&#39;|&quot;.*?&quot;|'.*?'|".*?")/g, (match) => {
+    strings.push(`<span class="js-string">${match}</span>`);
+    return `__STR_PLACEHOLDER_${strings.length - 1}__`;
+  });
+
+  // 4. Highlight keywords
+  const keywords = ['var', 'let', 'const', 'function', 'return', 'if', 'else', 'for', 'while', 'Math', 'PI', 'sin', 'cos'];
+  const keywordRegex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'g');
+  html = html.replace(keywordRegex, '<span class="js-keyword">$1</span>');
+
+  // 5. Highlight Hydra and JS functions
+  const funcs = [
+    'osc', 'noise', 'voronoi', 'shape', 'gradient', 'src', 'solid', 'prev',
+    'modulate', 'modulateScale', 'modulatePixelate', 'modulateRotate', 'modulateHue',
+    'add', 'sub', 'diff', 'mult', 'blend', 'layer', 'mask',
+    'rotate', 'scale', 'pixelate', 'posterize', 'shift', 'scrollX', 'scrollY', 'scroll',
+    'color', 'colorama', 'saturate', 'hue', 'invert', 'contrast', 'brightness', 'luma', 'thresh',
+    'out', 'render', 'speed', 'bpm'
+  ];
+  const funcRegex = new RegExp(`\\b(${funcs.join('|')})\\b`, 'g');
+  html = html.replace(funcRegex, '<span class="js-function">$1</span>');
+
+  // 6. Highlight numbers (decimals and integers, avoiding placeholders)
+  html = html.replace(/\b\d+(\.\d+)?\b/g, (match, decimals, offset, string) => {
+    const beforeStr = string.slice(Math.max(0, offset - 20), offset);
+    if (beforeStr.includes('__STR_PLACEHOLDER_')) {
+      return match;
+    }
+    return `<span class="js-number">${match}</span>`;
+  });
+
+  strings.forEach((strHtml, idx) => {
+    html = html.replace(`__STR_PLACEHOLDER_${idx}__`, strHtml);
+  });
+
+  // 8. Append comment back if it exists
+  if (commentPlaceholder) {
+    html += `<span class="js-comment">${escapeHTML(commentPlaceholder)}</span>`;
+  }
+
+  return html;
+}
+
 let continuousSwapped = 0;
 
 function updateRender() {
@@ -403,7 +461,7 @@ function updateRender() {
       }
     }
     
-    let html = `<span class="${colorClass}">${escapeHTML(text)}</span>`;
+    let html = `<span class="${colorClass}">${highlightJS(text)}</span>`;
     if (o.isOrphan) html = `<span class="orphan">${html}</span>`;
     if (o.isForcedOut) html = `<span class="forced-out">${html}</span>`;
     
