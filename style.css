@@ -45,6 +45,7 @@ body {
 }
 
 #code-viewer {
+  display: none;
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);

@@ -133,6 +133,71 @@ const sourceState = {};
   }
 });
 
+// Hidden High-Resolution Code Canvas
+const textCanvas = document.createElement('canvas');
+textCanvas.width = 1024;
+textCanvas.height = 1024;
+
+// Initialize s1, s2, s3 on startup with this canvas
+s1.init({ src: textCanvas });
+s2.init({ src: textCanvas });
+s3.init({ src: textCanvas });
+
+function drawCodeToCanvas(lines) {
+  const ctx = textCanvas.getContext('2d');
+  ctx.clearRect(0, 0, 1024, 1024);
+  
+  // Set transparent background
+  ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+  ctx.fillRect(0, 0, 1024, 1024);
+  
+  // Font styling: bold monospace
+  ctx.font = 'bold 24px "Fira Code", monospace';
+  ctx.textBaseline = 'top';
+  
+  let y = 80;
+  const lineHeight = 38;
+  const xOffset = 50;
+  
+  lines.forEach((line) => {
+    if (line.isOrphan) {
+      ctx.fillStyle = 'rgba(255, 85, 85, 0.45)'; // dim red
+    } else if (line.isForcedOut) {
+      ctx.fillStyle = 'rgba(241, 250, 140, 0.8)'; // yellow
+    } else if (line.source === 'A') {
+      ctx.fillStyle = '#0088ff'; // blue
+    } else {
+      ctx.fillStyle = '#00ffcc'; // teal
+    }
+    
+    let text = line.text;
+    if (line.isOrphan) {
+      text = text.replace(/^\/\/ \(orphan\) /gm, '');
+    }
+    
+    if (line.source === 'B' && line.introducedAtStep !== undefined) {
+      let localProgress = continuousSwapped - line.introducedAtStep + 1;
+      localProgress = Math.max(0, Math.min(localProgress, 1));
+      if (localProgress < 1) {
+        const revealCount = Math.floor(text.length * localProgress);
+        text = text.slice(0, revealCount) + '█';
+      }
+    }
+    
+    if (line.source === 'A' && line.removedAtStep !== undefined) {
+      let localProgress = line.removedAtStep - continuousSwapped;
+      localProgress = Math.max(0, Math.min(localProgress, 1));
+      if (localProgress < 1) {
+        const revealCount = Math.floor(text.length * localProgress);
+        text = text.slice(0, revealCount) + '█';
+      }
+    }
+    
+    ctx.fillText(text, xOffset, y);
+    y += lineHeight;
+  });
+}
+
 const generators = ['osc', 'noise', 'voronoi', 'shape', 'gradient', 'src', 'solid', 'prev'];
 
 function getAtoms(code) {
@@ -416,6 +481,36 @@ function updateRender() {
     render(o0);
     
     eval(activeCode);
+    
+    // Draw the code to our textCanvas
+    drawCodeToCanvas(visualCodeLines);
+    
+    // Execute the feedback buffer for Column 2 / Option A3 (runs on buffer o1)
+    src(s2)
+      .add(src(o1).scale(1.005).scrollX(0.001).scrollY(-0.001).colorama(0.002).mult(0.96))
+      .out(o1);
+
+    // Create the three columns
+    let col1 = src(o0).blend(src(s1).modulate(src(o0), 0.04), 0.6);
+    let col2 = src(o0).blend(src(o1), 0.6);
+    let col3 = src(o0).blend(
+      src(s3)
+        .modulateScale(gradient(0).luma(0.3, 0.1), 0.4)
+        .mult(osc(80, 0, 1).thresh(0.5).color(1, 1, 1)),
+      0.6
+    );
+
+    // Define shapes and column masks
+    let leftMask = shape(4, 0.166, 0.001).scale(1, 1, 6).scrollX(0.33);
+    let midMask = shape(4, 0.166, 0.001).scale(1, 1, 6);
+    let rightMask = shape(4, 0.166, 0.001).scale(1, 1, 6).scrollX(-0.33);
+
+    // Combine them side-by-side and output to o0 (the screen)
+    src(col1).mult(leftMask)
+      .add(src(col2).mult(midMask))
+      .add(src(col3).mult(rightMask))
+      .out(o0);
+
     codeContent.innerHTML = activeHTML;
   } catch (e) {
     console.error("Bleed Error:", e);
