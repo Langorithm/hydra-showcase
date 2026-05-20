@@ -45,15 +45,14 @@ body {
 }
 
 #code-viewer {
-  display: none;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 600px;
-  width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  max-width: 800px;
+  width: auto;
+  box-shadow: none;
+  mix-blend-mode: difference;
   transition: opacity 0.3s ease;
 }
 
