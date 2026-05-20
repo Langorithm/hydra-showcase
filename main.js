@@ -1,6 +1,4 @@
 import Hydra from 'hydra-synth';
-import { PhysicsState } from './src/engine/PhysicsState.js';
-import { DevControls } from './src/ui/DevControls.js';
 
 // Load all sketches dynamically from the /sketches folder
 const rawSketches = import.meta.glob('./sketches/*.js', { query: '?raw', eager: true });
