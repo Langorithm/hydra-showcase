@@ -36,8 +36,50 @@ window.addEventListener('resize', () => {
 });
 
 // Global State
+let deck = [];
+let discard = [];
 let currentSketchIndex = 0;
 let linesSwapped = 0;
+
+// Fisher-Yates Shuffle
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// Refill and shuffle the deck
+function refillAndShuffleDeck() {
+  const indices = Array.from({ length: sketches.length }, (_, i) => i);
+  shuffle(indices);
+  
+  // Avoid consecutive duplicate with the current active card if sketches.length > 1
+  if (sketches.length > 1 && indices[0] === currentSketchIndex) {
+    [indices[0], indices[indices.length - 1]] = [indices[indices.length - 1], indices[0]];
+  }
+  deck = indices;
+}
+
+// Draw a card from the deck, refilling if empty
+function drawCard() {
+  if (deck.length === 0) {
+    refillAndShuffleDeck();
+  }
+  return deck.shift();
+}
+
+// Peek at the next card in the deck (for pre-drawing)
+function getNextIndex() {
+  if (deck.length === 0) {
+    refillAndShuffleDeck();
+  }
+  return deck[0];
+}
+
+// Initialize current sketch index by drawing our first card
+currentSketchIndex = drawCard();
 
 // Explicitly make hydra functions global
 for (let key in hydra) {
@@ -241,7 +283,7 @@ let continuousSwapped = 0;
 
 function updateRender() {
   const sketchA = sketches[currentSketchIndex];
-  const nextIndex = (currentSketchIndex + 1) % sketches.length;
+  const nextIndex = getNextIndex();
   const sketchB = sketches[nextIndex];
 
   const bleedData = getCachedBleedUnits(currentSketchIndex, nextIndex);
@@ -345,7 +387,8 @@ function finishCurrentTransition() {
   transitionAnimationId = null;
   
   if (currentAnimationDirection === 'forward') {
-    currentSketchIndex = (currentSketchIndex + 1) % sketches.length;
+    discard.push(currentSketchIndex);
+    currentSketchIndex = drawCard();
   }
   
   linesSwapped = 0;
@@ -362,7 +405,7 @@ function animateTransition(direction) {
   const startLines = linesSwapped;
 
   if (direction === 'forward') {
-    const nextIndex = (currentSketchIndex + 1) % sketches.length;
+    const nextIndex = getNextIndex();
     const bleedData = getCachedBleedUnits(currentSketchIndex, nextIndex);
     const maxSteps = bleedData.logicSteps.length - 1;
     
@@ -377,7 +420,8 @@ function animateTransition(direction) {
       if (progress < 1) {
         transitionAnimationId = requestAnimationFrame(step);
       } else {
-        currentSketchIndex = nextIndex;
+        discard.push(currentSketchIndex);
+        currentSketchIndex = drawCard();
         linesSwapped = 0;
         continuousSwapped = 0;
         updateRender();
@@ -389,8 +433,15 @@ function animateTransition(direction) {
   } else {
     // Backward
     if (linesSwapped === 0) {
-      currentSketchIndex = (currentSketchIndex - 1 + sketches.length) % sketches.length;
-      const nextIndex = (currentSketchIndex + 1) % sketches.length;
+      if (discard.length === 0) {
+        currentAnimationDirection = null;
+        return; // Can't go backward, no discard pile
+      }
+      const prev = discard.pop();
+      deck.unshift(currentSketchIndex);
+      currentSketchIndex = prev;
+      
+      const nextIndex = getNextIndex();
       const bleedData = getCachedBleedUnits(currentSketchIndex, nextIndex);
       linesSwapped = bleedData.logicSteps.length - 1;
       continuousSwapped = linesSwapped;
@@ -449,7 +500,7 @@ function animateSingleStep(targetStep) {
 
 // Key Controls
 window.addEventListener('keydown', (e) => {
-  const nextIndex = (currentSketchIndex + 1) % sketches.length;
+  const nextIndex = getNextIndex();
   const bleedData = getCachedBleedUnits(currentSketchIndex, nextIndex);
   const maxSteps = bleedData.logicSteps.length - 1;
 
@@ -457,7 +508,8 @@ window.addEventListener('keydown', (e) => {
     if (e.shiftKey) {
       let target = linesSwapped + 1;
       if (target > maxSteps) {
-        currentSketchIndex = nextIndex;
+        discard.push(currentSketchIndex);
+        currentSketchIndex = drawCard();
         if (transitionAnimationId) { cancelAnimationFrame(transitionAnimationId); transitionAnimationId = null; currentAnimationDirection = null; }
         linesSwapped = 0;
         continuousSwapped = 0;
@@ -474,20 +526,27 @@ window.addEventListener('keydown', (e) => {
     if (e.shiftKey) {
       let target = linesSwapped - 1;
       if (target < 0) {
-        currentSketchIndex = (currentSketchIndex - 1 + sketches.length) % sketches.length;
-        const prevNextIndex = (currentSketchIndex + 1) % sketches.length;
-        const prevBleedData = getCachedBleedUnits(currentSketchIndex, prevNextIndex);
-        target = prevBleedData.logicSteps.length - 1;
-        
-        if (transitionAnimationId) { cancelAnimationFrame(transitionAnimationId); transitionAnimationId = null; currentAnimationDirection = null; }
-        linesSwapped = target;
-        continuousSwapped = target;
-        updateRender();
+        if (discard.length > 0) {
+          const prev = discard.pop();
+          deck.unshift(currentSketchIndex);
+          currentSketchIndex = prev;
+          
+          const nextIndex = getNextIndex();
+          const prevBleedData = getCachedBleedUnits(currentSketchIndex, nextIndex);
+          target = prevBleedData.logicSteps.length - 1;
+          
+          if (transitionAnimationId) { cancelAnimationFrame(transitionAnimationId); transitionAnimationId = null; currentAnimationDirection = null; }
+          linesSwapped = target;
+          continuousSwapped = target;
+          updateRender();
+        }
       } else {
         animateSingleStep(target);
       }
     } else {
-      animateTransition('backward');
+      if (discard.length > 0) {
+        animateTransition('backward');
+      }
     }
   }
 });
