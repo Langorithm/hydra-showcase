@@ -88,6 +88,51 @@ for (let key in hydra) {
   }
 }
 
+// Wrap source initializers to prevent duplicate WebMediaPlayer creation
+const sourceState = {};
+['s0', 's1', 's2', 's3'].forEach((srcName) => {
+  const srcObj = window[srcName];
+  if (!srcObj) return;
+
+  const originalInitCam = srcObj.initCam;
+  const originalInitImage = srcObj.initImage;
+  const originalInitVideo = srcObj.initVideo;
+  const originalInitScreen = srcObj.initScreen;
+
+  if (originalInitCam) {
+    srcObj.initCam = function(...args) {
+      const key = `cam-${JSON.stringify(args)}`;
+      if (sourceState[srcName] === key) return;
+      sourceState[srcName] = key;
+      return originalInitCam.apply(this, args);
+    };
+  }
+  if (originalInitImage) {
+    srcObj.initImage = function(...args) {
+      const key = `image-${JSON.stringify(args)}`;
+      if (sourceState[srcName] === key) return;
+      sourceState[srcName] = key;
+      return originalInitImage.apply(this, args);
+    };
+  }
+  if (originalInitVideo) {
+    srcObj.initVideo = function(...args) {
+      const key = `video-${JSON.stringify(args)}`;
+      if (sourceState[srcName] === key) return;
+      sourceState[srcName] = key;
+      return originalInitVideo.apply(this, args);
+    };
+  }
+  if (originalInitScreen) {
+    srcObj.initScreen = function(...args) {
+      const key = `screen-${JSON.stringify(args)}`;
+      if (sourceState[srcName] === key) return;
+      sourceState[srcName] = key;
+      return originalInitScreen.apply(this, args);
+    };
+  }
+});
+
 const generators = ['osc', 'noise', 'voronoi', 'shape', 'gradient', 'src', 'solid', 'prev'];
 
 function getAtoms(code) {
