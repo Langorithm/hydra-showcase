@@ -45,7 +45,6 @@ body {
 }
 
 #code-viewer {
-  position: relative; /* required for absolute scanline overlay */
   background: transparent;
   border: none;
   border-radius: 0;
@@ -62,24 +61,6 @@ body {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* High-frequency CRT Scanline overlay */
-#code-viewer::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.15) 50%
-  );
-  background-size: 100% 4px;
-  z-index: 10;
-  pointer-events: none;
-}
-
 #code-content {
   font-family: 'Fira Code', monospace;
   font-size: 14px;
@@ -88,6 +69,14 @@ body {
   
   /* Phosphor glow + Voltage hum animation */
   animation: crt-glow-flicker 0.15s infinite;
+
+  /* Scanlines sliced inside the text strokes only */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 50%,
+    rgba(0, 0, 0, 0.4) 50%
+  );
+  -webkit-mask-size: 100% 4px;
 }
 
 @keyframes crt-glow-flicker {
@@ -115,23 +104,24 @@ body {
 }
 
 .code-old {
-  color: #0088ff; /* blue */
+  color: #a855f7; /* Radiant warm neon purple - cooling deleted code */
   transition: color 0.3s ease;
 }
 
 .code-new {
-  color: #00ffcc; /* teal */
+  color: #00f5a0; /* Vibrant electric mint-teal - active new code */
   transition: color 0.3s ease;
 }
 
 .orphan {
+  color: #f43f5e; /* Electric rose/crimson */
   text-decoration: line-through;
-  text-decoration-color: #ff5555;
-  opacity: 0.5;
+  text-decoration-color: #f43f5e;
+  opacity: 0.45;
 }
 
 .forced-out {
-  color: #f1fa8c;
+  color: #fbbf24; /* Polished glowing amber-gold */
   font-style: italic;
-  opacity: 0.8;
+  opacity: 0.85;
 }
